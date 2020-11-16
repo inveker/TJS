@@ -4,7 +4,7 @@
   "description": "",
   "main": "background.js",
   "scripts": {
-    "build": "cd background & webpack & cd ../popup & webpack"
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
