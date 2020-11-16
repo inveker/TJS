@@ -8,5 +8,8 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, './ext'),
         filename: '[name].js'
+    },
+    optimization: {
+        minimize: false
     }
 };

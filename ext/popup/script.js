@@ -1,1 +1,149 @@
-(()=>{"use strict";function t(t){var e,s=0;for(e=0;e<t.length;e++)s=(s<<5)-s+t.charCodeAt(e),s|=0;return s}console.log("popup"),async function(){let e,s=browser.tabs.query({active:!0,lastFocusedWindow:!0});await s.then((t=>{e=t[0]}));let r=e.url;var o=function(t){return{host:t,async set(t,e){let s=this.host,r=await this.getHostStore();r[t]=e,browser.storage.local.set({[s]:JSON.stringify(r)})},async get(t){return(await this.getHostStore())[t]},async delete(t){let e=this.host,s=await this.getHostStore();delete s[t],browser.storage.local.set({[e]:JSON.stringify(s)})},async clear(){await browser.storage.local.remove(this.host).then()},async getHostStore(){let t=this.host,e={},s=browser.storage.local.get(t);return await s.then((s=>{s[t]&&(e=JSON.parse(s[t]))})),e}}}(new URL(r).hostname);new Vue({el:"#app",data:{a:111,scripts:[],ignoreList:[]},created:function(){let e=this;o.get("scripts").then((s=>{console.log("1",s),null==s?fetch(r).then((t=>t.text())).then((s=>{let r=(new DOMParser).parseFromString(s,"text/html"),n=[];for(let e=0;e<r.scripts.length;e++){let s=r.scripts[e];if(s.src)n.push({type:"file",src:s.src,uniq:s.src});else{let e=s.innerHTML,r=e.slice(0,20);n.push({type:"inline",inner:r,uniq:r+"_"+e.length+"_"+t(e)})}}console.log("scri",n),o.set("scripts",n),e.scripts=n})):e.scripts=s})),o.get("ignored").then((t=>{console.log("ignore",t),null!=t&&(e.ignoreList=t)}))},methods:{updateIgnore(){o.set("ignored",this.ignoreList)}}})}()})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+
+// CONCATENATED MODULE: ./utils/store.js
+let data = {};
+
+let store = {
+    set(name, value) {
+        data[name] = value;
+        return true;
+    },
+    get(name) {
+        return data[name];
+    },
+    del(name) {
+        delete data[name];
+        return true;
+    }
+}
+
+function createStore() {
+    browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+        if(request.api == 'store')
+            sendResponse({msg: store[request.action](...request.args)});
+    });
+    return store;
+}
+
+function getAsyncStore() {
+    return {
+        async set(name, value) {
+            return (await browser.runtime.sendMessage({
+                api: 'store',
+                action: 'set',
+                args: Object.values(arguments)
+            })).msg;
+        },
+        async get(name) {
+            return (await browser.runtime.sendMessage({
+                api: 'store',
+                action: 'get',
+                args: Object.values(arguments)
+            })).msg;
+        },
+        async del(name) {
+            return (await browser.runtime.sendMessage({
+                api: 'store',
+                action: 'del',
+                args: Object.values(arguments)
+            })).msg;
+        }
+    };
+}
+
+function getGlobalStore() {
+    return store;
+}
+// CONCATENATED MODULE: ./popup/app.js
+
+
+
+
+//Get store
+var app_store = getAsyncStore();
+
+
+async function init() {
+    let tab, tabProm = browser.tabs.query({active: true, lastFocusedWindow: true});
+    await tabProm.then(tabs => {
+        tab = tabs[0];
+    });
+    let url = tab.url;
+    let host = new URL(url).hostname;
+
+
+    new Vue({
+        el: '#app',
+        data: {
+            a: 111,
+            scripts: [],
+            ignoreList: [],
+        },
+        created: function() {
+            let $this = this;
+            app_store.get(host+'scripts').then(item => {
+                if(item == undefined) {
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(page => {
+                            let parser = new DOMParser();
+                            let doc = parser.parseFromString(page, "text/html");
+                            let scripts = [];
+                            for(let i = 0; i < doc.scripts.length; i++) {
+                                let s = doc.scripts[i];
+                                if(s.src)
+                                    scripts.push({
+                                        type: 'file',
+                                        src: s.src,
+                                        uniq: s.src
+                                    })
+                                else {
+                                    let code = s.innerHTML
+                                    let beginScript = code.slice(0, 20);
+                                    scripts.push({
+                                        type: 'inline',
+                                        inner: beginScript,
+                                        uniq: beginScript + '_' + code.length + '_' + hash(code)
+                                    })
+                                }
+
+                            }
+                            app_store.set(host+'scripts', scripts)
+                            $this.scripts = scripts;
+                        });
+                } else {
+                    $this.scripts = item;
+                }
+            });
+            app_store.get(host+'ignored').then(item => {
+                if(item != undefined)
+                    $this.ignoreList = item;
+            });
+        },
+        methods: {
+            updateIgnore() {
+                app_store.set(host+'ignored', this.ignoreList);
+            }
+        }
+    })
+
+
+}
+init();
+
+
+function hash(str) {
+    var hash = 0, i, chr;
+    for (i = 0; i < str.length; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+
+
+/******/ })()
+;

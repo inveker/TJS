@@ -1,8 +1,7 @@
-console.log('popup')
-import createStore from '../utils/stor.js'
+import {getAsyncStore} from '../utils/store.js'
 
-
-
+//Get store
+var store = getAsyncStore();
 
 async function init() {
     let tab, tabProm = browser.tabs.query({active: true, lastFocusedWindow: true});
@@ -11,8 +10,6 @@ async function init() {
     });
     let url = tab.url;
     let host = new URL(url).hostname;
-
-    var stor = createStore(host);
 
 
     new Vue({
@@ -24,8 +21,7 @@ async function init() {
         },
         created: function() {
             let $this = this;
-            stor.get('scripts').then(item => {
-                console.log('1', item)
+            store.get(host+'scripts').then(item => {
                 if(item == undefined) {
                     fetch(url)
                         .then(response => response.text())
@@ -52,23 +48,21 @@ async function init() {
                                 }
 
                             }
-                            console.log('scri',scripts);
-                            stor.set('scripts', scripts)
+                            store.set(host+'scripts', scripts)
                             $this.scripts = scripts;
                         });
                 } else {
                     $this.scripts = item;
                 }
             });
-            stor.get('ignored').then(item => {
-                console.log('ignore', item)
+            store.get(host+'ignored').then(item => {
                 if(item != undefined)
                     $this.ignoreList = item;
             });
         },
         methods: {
             updateIgnore() {
-                stor.set('ignored', this.ignoreList);
+                store.set(host+'ignored', this.ignoreList);
             }
         }
     })
