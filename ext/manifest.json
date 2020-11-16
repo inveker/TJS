@@ -1,0 +1,28 @@
+{
+  "name": "Test",
+  "description": "Test",
+  "version": "1.0",
+  "manifest_version": 2,
+  "permissions": ["background", "tabs", "activeTab", "webRequest", "browsingData", "webRequestBlocking", "storage", "<all_urls>"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; object-src 'self'",
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "16": "icon_off.svg",
+      "32": "icon_off.svg"
+    },
+    "default_title": "browser_action",
+    "default_popup": "popup/index.html"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_start",
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "extdnsion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "background.js",
+  "scripts": {
+    "build": "cd background & webpack & cd ../popup & webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^5.1.0",
+    "webpack-cli": "^4.0.0"
+  },
+  "dependencies": {
+    "acorn": "^8.0.4",
+    "esprima": "^4.0.1"
+  }
+}
