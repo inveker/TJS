@@ -1,53 +1,30 @@
-let data = {};
+let repositories = {};
 
-let store = {
-    set(name, value) {
-        data[name] = value;
-        return true;
-    },
-    get(name) {
-        return data[name];
-    },
-    del(name) {
-        delete data[name];
-        return true;
-    }
-}
-
-export function createStore() {
-    browser.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-        if(request.api == 'store')
-            sendResponse({msg: store[request.action](...request.args)});
+export function activateStore() {
+    browser.runtime.onMessage.addListener(function(req, sender, sendResponse) {
+        if(req.api == 'store')
+            if(req.action == 'get') {
+                if(!repositories[req.repository])
+                    repositories[req.repository] = {};
+                sendResponse(repositories[req.repository]);
+            }
     });
-    return store;
 }
 
-export function getAsyncStore() {
-    return {
-        async set(name, value) {
-            return (await browser.runtime.sendMessage({
-                api: 'store',
-                action: 'set',
-                args: Object.values(arguments)
-            })).msg;
-        },
-        async get(name) {
-            return (await browser.runtime.sendMessage({
-                api: 'store',
-                action: 'get',
-                args: Object.values(arguments)
-            })).msg;
-        },
-        async del(name) {
-            return (await browser.runtime.sendMessage({
-                api: 'store',
-                action: 'del',
-                args: Object.values(arguments)
-            })).msg;
-        }
-    };
-}
 
-export function getGlobalStore() {
-    return store;
+export function getStore(name) {
+    if(!repositories[name])
+        repositories[name] =
+            (new Error).fileName.indexOf('/background.js') > -1
+            ? {}
+            : new Promise(function(resolve, reject) {
+                    browser.runtime.sendMessage({
+                        api: 'store',
+                        action: 'get',
+                        repository: name
+                    }).then(function (res) {
+                        resolve(res);
+                    });
+                });
+    return repositories[name];
 }

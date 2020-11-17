@@ -1,7 +1,4 @@
-import {getAsyncStore} from '../utils/store.js'
-
-//Get store
-var store = getAsyncStore();
+import {getStore} from '../utils/store.js';
 
 async function init() {
     let tab, tabProm = browser.tabs.query({active: true, lastFocusedWindow: true});
@@ -11,6 +8,9 @@ async function init() {
     let url = tab.url;
     let host = new URL(url).hostname;
 
+    let store = await getStore(host).then(function(s) {
+        return s;
+    });
 
     new Vue({
         el: '#app',
@@ -21,8 +21,8 @@ async function init() {
         },
         created: function() {
             let $this = this;
-            store.get(host+'scripts').then(item => {
-                if(item == undefined) {
+            if(store.scripts == undefined) {
+                if(url.match(/^http/))
                     fetch(url)
                         .then(response => response.text())
                         .then(page => {
@@ -48,26 +48,20 @@ async function init() {
                                 }
 
                             }
-                            store.set(host+'scripts', scripts)
-                            $this.scripts = scripts;
+                            store.scripts = $this.scripts = scripts;
                         });
-                } else {
-                    $this.scripts = item;
-                }
-            });
-            store.get(host+'ignored').then(item => {
-                if(item != undefined)
-                    $this.ignoreList = item;
-            });
+            } else
+                $this.scripts = store.scripts;
+
+            if(store.ignored != undefined)
+                $this.ignoreList = store.ignored;
         },
         methods: {
             updateIgnore() {
-                store.set(host+'ignored', this.ignoreList);
+                store.ignored = this.ignoreList;
             }
         }
     })
-
-
 }
 init();
 

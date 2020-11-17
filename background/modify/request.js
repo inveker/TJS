@@ -1,8 +1,9 @@
 import modifyBody from "./body";
 import modifyScript from "./script";
-import {getGlobalStore} from '../../utils/store.js';
+import {getStore} from '../../utils/store.js';
 
-var store = getGlobalStore();
+let store = getStore('global');
+
 
 export default function(details) {
     let url, mod_fn;
@@ -26,7 +27,7 @@ export default function(details) {
     //Inject
     if(url) {
         let host = new URL(url).hostname;
-        if (store.get('urls').indexOf(host) != -1)
+        if (store.urls.indexOf(host) != -1)
             modifyBody(details, mod_fn);
     }
 }

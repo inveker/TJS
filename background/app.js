@@ -1,14 +1,16 @@
-import {createStore} from '../utils/store.js';
+import {getStore, activateStore} from '../utils/store.js';
 import requestHandler from './modify/request.js';
+
 
 //Background window obj
 const b_window = browser.extension.getBackgroundPage();
 const console = b_window.console;
 
+//New store
+activateStore();
+let store = getStore('global');
+store.urls = ['aaa'];
 
-//Enable store
-var store = createStore();
-store.set('urls', ['aaa']);
 
 //Processing HTTP requests and modifying HTTP responses
 browser.webRequest.onBeforeRequest.addListener(
@@ -16,6 +18,10 @@ browser.webRequest.onBeforeRequest.addListener(
     {urls: ["<all_urls>"]},
     ["blocking"]
 );
+
+
+
+
 
 
 
