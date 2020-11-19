@@ -1,4 +1,4 @@
-import {getStore, activateAsyncStore} from '../utils/store.js';
+import {getStore, activateAsyncStore} from '../lib/store.js';
 import requestHandler from './modify/request.js';
 
 

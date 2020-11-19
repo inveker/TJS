@@ -1,4 +1,4 @@
-import {getStore} from '../utils/store.js';
+import {getStore} from '../lib/store.js';
 
 async function init() {
     let tab = (await browser.tabs.query({active: true, lastFocusedWindow: true}))[0];
