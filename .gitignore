@@ -1,4 +1,6 @@
 .idea
+package-lock.json
+dist/
 node_modules
-ext/popup/script.js
+ext/popup_/script.js
 ext/background.js

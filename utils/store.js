@@ -1,6 +1,6 @@
 let repositories = {};
 
-export function activateStore() {
+export function activateAsyncStore() {
     browser.runtime.onMessage.addListener(function(req, sender, sendResponse) {
         if(req.api == 'store')
             if(req.action == 'get') {

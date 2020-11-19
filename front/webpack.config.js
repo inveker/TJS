@@ -2,10 +2,10 @@ const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
-    entry : './popup_/main.js',
+    entry : './main.js',
     output: {
-        path: path.resolve(__dirname, './ext'),
-        filename: 'popup_/script.js'
+        path: path.resolve(__dirname, '../app/dist'),
+        filename: 'popup.js'
     },
     optimization: {
         minimize: false
@@ -26,10 +26,6 @@ module.exports = {
         ]
     },
     plugins: [
-        // убедитесь что подключили плагин!
         new VueLoaderPlugin()
-    ],
-    resolve: {
-        extensions: ['.js', '.vue'],
-    },
+    ]
 };

@@ -1,19 +1,17 @@
 {
-  "name": "extdnsion",
+  "name": "extension",
   "version": "1.0.0",
   "description": "",
-  "main": "background.js",
+  "main": "manifest.json",
   "scripts": {
     "build": "webpack"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "webpack": "^5.1.0",
-    "webpack-cli": "^4.0.0"
-  },
   "dependencies": {
-    "acorn": "^8.0.4",
-    "esprima": "^4.0.1"
+    "background_script": "file:back",
+    "popup_page": "file:front",
+    "@babel/core": "^7.12.3",
+
   }
 }

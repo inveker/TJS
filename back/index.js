@@ -1,4 +1,4 @@
-import {getStore, activateStore} from '../utils/store.js';
+import {getStore, activateAsyncStore} from '../utils/store.js';
 import requestHandler from './modify/request.js';
 
 
@@ -7,7 +7,7 @@ const b_window = browser.extension.getBackgroundPage();
 const console = b_window.console;
 
 //New store
-activateStore();
+activateAsyncStore();
 let store = getStore('global');
 store.urls = ['aaa'];
 
