@@ -10,8 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "background_script": "file:back",
-    "popup_page": "file:front",
-    "@babel/core": "^7.12.3",
-
+    "popup_page": "file:front"
   }
 }

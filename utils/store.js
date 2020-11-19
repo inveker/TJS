@@ -1,4 +1,28 @@
+/*
+Store
+
+Install:
+1.(required) Import on background script
+2.(optional) Run activateAsyncStore(), to enable api for content scripts
+
+Use
+call getStore('store_name')
+return (
+    on background script: store object,
+    on content scripts: promise resolved store object
+)
+
+Explanations
+@var repositories
+Each process has its own @var
+In background script use @var as the main global repository
+Other scripts save into @var local copies obtained from background scripts
+*/
+
+
 let repositories = {};
+
+let isBackground = (new Error).fileName.indexOf('/background.js') > -1;
 
 export function activateAsyncStore() {
     browser.runtime.onMessage.addListener(function(req, sender, sendResponse) {
@@ -11,11 +35,9 @@ export function activateAsyncStore() {
     });
 }
 
-
 export function getStore(name) {
     if(!repositories[name])
-        repositories[name] =
-            (new Error).fileName.indexOf('/background.js') > -1
+        repositories[name] = isBackground
             ? {}
             : new Promise(function(resolve, reject) {
                     browser.runtime.sendMessage({
