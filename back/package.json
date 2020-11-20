@@ -8,11 +8,10 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "webpack": "^5"
-  },
   "dependencies": {
     "acorn": "^8.0.4",
-    "esprima": "^4.0.1"
+    "esprima": "^4.0.1",
+    "webpack": "^5",
+    "webpack-cli": "^4.2.0"
   }
 }

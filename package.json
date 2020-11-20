@@ -4,7 +4,9 @@
   "description": "",
   "main": "manifest.json",
   "scripts": {
-    "build": "webpack"
+    "front": "cd front && npm run build & cd ..",
+    "back": "cd back && npm run build & cd ..",
+    "build": "npm run front & npm run back"
   },
   "author": "",
   "license": "ISC",
