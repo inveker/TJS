@@ -1,11 +1,15 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+let dist = '../app/dist';
+
 
 module.exports = {
-    entry : './main.js',
+    entry : './src/main.js',
     output: {
-        path: path.resolve(__dirname, '../app/dist'),
-        filename: 'popup.js'
+        path: path.resolve(__dirname, dist+'/popup'),
+        filename: 'bundle.js'
     },
     optimization: {
         minimize: false
@@ -26,7 +30,11 @@ module.exports = {
         ]
     },
     plugins: [
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: 'index.html'
+        }),
     ],
     resolve: {
         modules: ['node_modules']
