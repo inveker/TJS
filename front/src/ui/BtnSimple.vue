@@ -1,5 +1,5 @@
 <template>
-  <div class="root">
+  <div class="btn">
     <slot></slot>
   </div>
 </template>
@@ -7,17 +7,13 @@
 <script>
 export default {
   name: "btn1",
-  data() {
-    return {
-
-    }
-  }
 }
 </script>
 
 <style scoped>
-  .root {
-    color: green;
-    background-color: red;
+  .btn {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid black;
   }
 </style>
