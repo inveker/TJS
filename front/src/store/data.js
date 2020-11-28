@@ -42,12 +42,13 @@ export async function getData(tabId = undefined) {
 Function saveData
 Sends requests to save data to the background page
 */
-export function saveData(state, tabId) {
+export function saveData(storeState, tabId) {
+    let state = JSON.parse(JSON.stringify(storeState))
     for(let store in DATA)
         if(DATA[store].length) {
             let data = {};
             for(let name of DATA[store])
-                data[name] = JSON.parse(JSON.stringify(state[name]));
+                data[name] = state[name];
             updateStore(data, store, tabId);
         }
 }
