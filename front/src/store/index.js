@@ -1,7 +1,7 @@
 import hash from "../utils/hash";
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {getStore, updateStore} from "../../../lib/store";
+import {getData, saveData} from "./data.js";
 
 
 Vue.use(Vuex);
@@ -12,12 +12,9 @@ let store = new Vuex.Store({
         parseUrl: {},
         tab: {},
         scripts: [],
-        ignoredScript: [],
+        ignoredScript: []
     },
     mutations: {
-        SET_PARSE_URL(state, parseUrl) {
-            state.parseUrl = parseUrl;
-        },
         SET_SCRIPTS(state, scripts) {
             state.scripts = scripts;
         },
@@ -26,22 +23,8 @@ let store = new Vuex.Store({
         }
     },
     actions: {
-        async INIT_STORE(context) {
-            let state = context.state;
-            if(!Object.keys(state.parseUrl).length)
-                await context.dispatch('SET_PARSE_URL');
-            let tabStore = await getStore('tabs', state.tab.id);
-            for(let key in tabStore)
-                if(tabStore.hasOwnProperty(key))
-                    state[key] = tabStore[key];
-        },
-        async SET_PARSE_URL(context) {
-            let tab = (await browser.tabs.query({active: true, lastFocusedWindow: true}))[0];
-            context.state.tab = tab;
-            context.commit('SET_PARSE_URL', new URL(tab.url));
-        },
         async SET_SCRIPTS(context) {
-            let url = context.state.parseUrl.origin;
+            let url = store.static.url.origin;
 
             if(url.match(/^http/)) {
                 let page = await fetch(url).then(response => response.text());
@@ -66,28 +49,36 @@ let store = new Vuex.Store({
                         });
                     }
                 }
-
                 context.commit('SET_SCRIPTS', scripts);
             }
         }
     }
 });
 
-let savedData = [
-    'scripts',
-    'ignoredScript',
-];
 
-store.dispatch('INIT_STORE').then(function() {
+async function initStore(store) {
+    let tab = (await browser.tabs.query({active: true, lastFocusedWindow: true}))[0];
+    let url =  new URL(tab.url);
+
+    store.static = {
+        tab: tab,
+        url: url
+    }
+
+    let data = await getData(tab.id)
+
+    for(let key in data)
+        if(data.hasOwnProperty(key))
+            store.state[key] = data[key];
+
     window.onunload = function() {
-        if(Number.isInteger(store.state.tab.id)) {
-            let save = {};
-            for(let name of savedData)
-                save[name] = store.state[name]
-            updateStore(save, 'tabs', store.state.tab.id);
-        }
+        if(Number.isInteger(tab.id))
+            saveData(store.state, tab.id)
     };
-});
+}
+
+initStore(store);
+
 
 
 export default store;
