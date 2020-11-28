@@ -38,39 +38,13 @@ export default {
   methods: {
     ...mapMutations([
         'setScripts',
-        'setIgnoreList',
+        'setIgnoredScript',
     ]),
-    async newTestAction() {
-      let url = $staticStore.url;
-      if(url.match(/^http/)) {
-        let page = await fetch(url).then(response => response.text());
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(page, "text/html");
-        let scripts = [];
-        for (let i = 0; i < doc.scripts.length; i++) {
-          let s = doc.scripts[i];
-          if (s.src)
-            scripts.push({
-              type: 'file',
-              src: s.src,
-              uniq: s.src
-            });
-          else {
-            let code = s.innerHTML
-            let beginScript = code.slice(0, 20);
-            scripts.push({
-              type: 'inline',
-              inner: beginScript,
-              uniq: beginScript + '_' + code.length + '_' + hash(code)
-            });
-          }
-        }
-
-        this.setScripts({scripts: scripts})
-      }
+    newTestAction() {
+      this.$store.dispatch('SET_SCRIPTS');
     },
     updateIgnore() {
-      this.setIgnoreList(this.ignoreList);
+      this.setIgnoredScript(this.ignoredScript);
     }
   },
   components: {

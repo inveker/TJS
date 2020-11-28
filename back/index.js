@@ -8,7 +8,7 @@ const console = b_window.console;
 
 //New store
 activateAsyncStore();
-let store = getStore('global');
+let store = getStore('browser');
 store.urls = ['aaa'];
 
 
@@ -21,9 +21,29 @@ browser.webRequest.onBeforeRequest.addListener(
 
 
 
+browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tabInfo) {
+    if(changeInfo.url != undefined)
+        clearTabStore(tabId)
+});
+browser.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+    clearTabStore(tabId);
+});
+
+function clearTabStore(tabId) {
+    console.log('clear')
+    let tabsStore = getStore('tabs');
+    delete tabsStore[tabId];
+}
 
 
-
+browser.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+    browser.tabs.query({}).then(tabs => {
+        if(tabs.length == 1) {
+            let storage = getStore('storage');
+            browser.storage.local.set({storage: storage});
+        }
+    });
+});
 
 //
 // function toggleIcon(url) {
@@ -37,13 +57,6 @@ browser.webRequest.onBeforeRequest.addListener(
 //     });
 // }
 //
-// browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tabInfo) {
-//     if(changeInfo.url != undefined) {
-//         toggleIcon(changeInfo.url)
-//         stor.host = new URL(changeInfo.url).hostname
-//         stor.delete('scripts');
-//     }
-// });
 
 // browser.tabs.onActivated.addListener(function(activeInfo) {
 //     browser.tabs.query({currentWindow: true, active: true}).then(function (tabs) {

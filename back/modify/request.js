@@ -2,7 +2,7 @@ import modifyBody from "./body";
 import modifyScript from "./script";
 import {getStore} from '../../lib/store.js';
 
-let store = getStore('global');
+let store = getStore('browser');
 
 
 export default function(details) {
